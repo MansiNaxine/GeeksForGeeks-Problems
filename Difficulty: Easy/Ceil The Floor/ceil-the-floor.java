@@ -3,39 +3,21 @@
 class Solution {
     public int[] getFloorAndCeil(int x, int[] arr) {
         
+        Arrays.sort(arr);
+        
+        int ans[] = new int[2];
         int n = arr.length;
         int start = 0;
         int end = n - 1;
+        int ceil = -1;
         int floor = -1;
         
-        Arrays.sort(arr);
-        
-        //to calculate floor
+        //To find Ceil 
         while(start <= end) {
             
             int mid = (start + end)/2;
             
-            if(arr[mid] <= x) {
-                
-                floor = arr[mid];
-                start = mid + 1;
-            }
-            else {
-                end = mid - 1;
-            }
-        }
-        
-        //To Calculate Ceil
-        start = 0;
-        end = n - 1;
-        int ceil = -1;
-        
-        while(start <= end) {
-            
-            int mid = (start + end)/2;
-            
-            if(arr[mid] >= x) {
-                
+            if (arr[mid] >= x) {
                 ceil = arr[mid];
                 end = mid - 1;
             }
@@ -44,7 +26,25 @@ class Solution {
             }
         }
         
-        return new int[]{floor, ceil};
+        start = 0;
+        end = n - 1;
+        //To Find floor
+        while(start <= end) {
+            
+            int mid = (start + end)/2;
+            
+            if (arr[mid] <= x) {
+                floor = arr[mid];
+                start = mid + 1;
+            }
+            else {
+                end = mid - 1;
+            }
+        }
         
+        ans[0] = floor;
+        ans[1] = ceil;
+        
+        return ans;
     }
 }
