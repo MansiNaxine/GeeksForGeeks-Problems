@@ -1,57 +1,57 @@
 class Solution {
     public int minTime(int[] arr, int k) {
-        // code here
+        
         int n = arr.length;
         int max = Integer.MIN_VALUE;
         int sum = 0;
         
         for(int num : arr) {
-            max = Math.max(max, num);
             sum += num;
+            max = Math.max(max, num);
         }
-        
-        //Edge case
-        if(n == k) return max;
         
         int start = max;
         int end = sum;
-        int ans = -1;
+        int ans = max;
+        
+        //Edge Cases
+        if(k == 1) return sum;
+        else if (k == n) return max;
         
         while(start <= end) {
             
             int mid = (start + end)/2;
-            int possiblePainters = getNoOfPainters(arr, mid);
+            int possiblePainters = getPossiblePainters(mid, arr);
             
-            if (possiblePainters <= k) {
+            if(possiblePainters <= k) {
                 ans = mid;
                 end = mid - 1;
             }
             else {
                 start = mid + 1;
             }
-            
         }
         
         return ans;
         
     }
     
-    public int getNoOfPainters(int[] arr, int mid) {
+    public int getPossiblePainters(int mid, int[] arr) {
         
+        int cnt = 0;
         int sum = 0;
-        int count = 1;
         
         for(int num : arr) {
-            if ((sum + num) <= mid) {
+            
+            if((sum + num) <= mid) {
                 sum += num;
             }
             else {
-                count += 1;
+                cnt += 1;
                 sum = num;
             }
         }
         
-        return count;
-        
+        return cnt + 1;
     }
 }
