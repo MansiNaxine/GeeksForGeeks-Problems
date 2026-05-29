@@ -1,75 +1,72 @@
 class Solution {
     public int spanningTree(int V, int[][] edges) {
-       
-       //Create an Adjancy List
-       List<List<List<Integer>>> adjancyList = new ArrayList<>();
-       for(int i = 0 ; i < V; i++) {
-           adjancyList.add(new ArrayList<>());
-       }
-       
-       for(int i = 0; i < edges.length; i++) {
-           int u = edges[i][0];
-           int v = edges[i][1];
-           int e = edges[i][2];
-           
-           List<Integer> currList1 = new ArrayList<>();
-           currList1.add(v);
-           currList1.add(e);
-           
-           adjancyList.get(u).add(new ArrayList<>(currList1));
-           
-           List<Integer> currList2 = new ArrayList<>();
-           currList2.add(u);
-           currList2.add(e);
-           
-           adjancyList.get(v).add(new ArrayList<>(currList2));
-       }
-       
-       int[] visited = new int[V];
-       int sum = 0;
-       
-       PriorityQueue<Pair> que = new PriorityQueue<>((a, b) -> a.x - b.x);
-       que.add(new Pair(0, 0));
-       
-       while(!que.isEmpty()) {
-           Pair currP = que.remove();
-           int nodeWt = currP.x;
-           int root = currP.y;
-           
-           if(visited[root] == 1) continue;
-           else {
-               visited[root] = 1;
-               sum += nodeWt;
-               
-               for(List<Integer> curr : adjancyList.get(root)) {
-                   int node = curr.get(0);
-                   int wt = curr.get(1);
-                   
-                   if(visited[node] == 0) {
-                       que.add(new Pair(wt, node));
-                   }
-               }
-           }
-       }
-       
-       return sum;
         
+        int n = edges.length;
+        DisJointUnion unionObj = new DisJointUnion(V);
+        
+        List<List<Integer>> list = new ArrayList<>();
+        int sum = 0;
+        
+        for(int i = 0; i < n; i++) {
+            List<Integer> currList = new ArrayList<>();
+            int u = edges[i][0];
+            int v = edges[i][1];
+            int e = edges[i][2];
+            
+            currList.add(e);
+            currList.add(u);
+            currList.add(v);
+            
+            
+            list.add(new ArrayList<>(currList));
+        }
+        
+        Collections.sort(list, (x, y) -> Integer.compare(x.get(0), y.get(0)));
+        
+        for(int i = 0; i < n; i++) {
+            int u = list.get(i).get(1);
+            int v = list.get(i).get(2);
+            int e = list.get(i).get(0);
+            
+            if(unionObj.findParent(u) != unionObj.findParent(v)) {
+                sum += e;
+                unionObj.formUnion(u, v);
+            }
+        }
+        
+        return sum;
     }
 }
 
-
-class Pair {
-    int x;
-    int y;
-    Pair inner;
+class DisJointUnion {
     
-    Pair(int x, Pair inner) {
-        this.x = x;
-        this.inner = inner;
+    List<Integer> size = new ArrayList<>();
+    List<Integer> parent = new ArrayList<>();
+    
+    DisJointUnion(int len) {
+        for(int i = 0; i <= len; i++) {
+            size.add(1);
+            parent.add(i);
+        }
     }
     
-    Pair(int x, int y) {
-        this.x = x;
-        this.y = y;
+    
+    public int findParent(int node) {
+        if(node == parent.get(node)) return node;
+        return findParent(parent.get(node));
+    }
+    
+    public void formUnion(int u, int v) {
+        int parentU = findParent(u);
+        int parentV = findParent(v);
+        
+        if(size.get(parentU) < size.get(parentV)) {
+            parent.set(parentU, parentV);
+            size.set(parentV , size.get(parentV) + size.get(parentU));
+        }
+        else {
+            parent.set(parentV, parentU);
+            size.set(parentU , size.get(parentV) + size.get(parentU));
+        }
     }
 }
