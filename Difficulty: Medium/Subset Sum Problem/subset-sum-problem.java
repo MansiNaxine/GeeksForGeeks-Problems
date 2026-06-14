@@ -15,7 +15,36 @@ class Solution {
     
         //OPTIMAL SOLUTOIN
         // TABULATION
-        return tabulation(arr, sum, n, dp);
+        // return tabulation(arr, sum, n, dp);
+        
+        
+        //More Space Optimization
+         return moreSpaceOptimization(arr, sum, n);
+        
+    }
+    
+    public static boolean moreSpaceOptimization(int[] arr, int sum, int n) {
+        int sizeSum = 10000;
+        boolean[] prev = new boolean[sizeSum + 1];
+        
+        
+        prev[0] = true;
+        prev[arr[0]] = true;
+        
+        for(int i = 1; i < n; i++) {
+            boolean[] curr = new boolean[sizeSum + 1];
+            curr[0] = true;
+            for(int target = 1; target <= sum; target++) {
+                boolean take = false;
+                if(arr[i] <= target) take = prev[target - arr[i]];
+                boolean notTake = prev[target];
+                
+                curr[target] = take || notTake; 
+            }
+            prev = curr;
+        }
+        
+        return prev[sum];
     }
     
     public static boolean tabulation(int[] arr, int sum, int n, boolean[][] dp) {
